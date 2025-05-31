@@ -378,19 +378,21 @@ return [
 
         [
             'text' => 'Roles',
-            'route' => '', // ← Ruta que usás en web.php admin.roles.index
+            'route' => 'admin.roles.index', // ← Ruta que usás en web.php admin.roles.index
             'icon'  => 'fas fa-user-tag',
         ],
         [
             'text' => 'Permisos',
-            'route' => '', // ← Ajustá a tu naming admin.permisos.index
+            'route' => 'admin.permisos.index', // ← Ajustá a tu naming admin.permisos.index
             'icon'  => 'fas fa-key',
         ],
         [
             'text' => 'Usuarios',
-            'route' => '',//admin.usuarios.index
+            'route' => 'admin.usuarios.index',//admin.usuarios.index
             'icon'  => 'fas fa-users',
         ],
+
+        ['header' => '--- SIUT ---',],
     
     ],
 

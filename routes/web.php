@@ -14,6 +14,10 @@ use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\Admin\EspecialidadController;
 use App\Http\Controllers\Admin\PlanificacionController;
 
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\UserController;
+
 
 use App\Http\Controllers\Docente\CursoController as DocenteCursoController;
 
@@ -54,6 +58,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::resource('planificaciones', PlanificacionController::class)->names('planificaciones');
 
 
+
+      Route::resource('roles', RoleController::class)->names('roles');
+    Route::resource('permisos', PermissionController::class)->names('permisos');
+    Route::resource('usuarios', UserController::class);
    // Route::resource('especialidades', EspecialidadController::class)->names('admin.especialidades');
 });
 

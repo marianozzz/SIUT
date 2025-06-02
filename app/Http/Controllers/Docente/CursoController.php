@@ -1,20 +1,20 @@
 <?php
-
 namespace App\Http\Controllers\Docente;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Curso;
 
 class CursoController extends Controller
 {
     public function index()
     {
-        $docente = auth()->user();
+        $docente = Auth::user();
 
-        // Suponiendo que tenés una relación como: $user->cursos()
-       // $cursos = $docente->cursos; // O una consulta personalizada
+        $cursos = Curso::whereHas('asignaturas', function ($query) use ($docente) {
+            $query->where('profesor_id', $docente->id);
+        })->get();
 
-        return view('docentes.dashboard');
+        return view('docentes.cursos.index', compact('cursos'));
     }
 }

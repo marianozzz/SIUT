@@ -8,7 +8,7 @@
 
         {{-- Mis Cursos --}}
         <div class="col-md-4 mb-4">
-            <a href="{{ route('docente.dashboard') }}" class="text-decoration-none">
+            <a href="{{ route('docentes.cursos.index') }}" class="text-decoration-none">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
                         <i class="bi bi-journal-bookmark-fill display-4 text-primary"></i>

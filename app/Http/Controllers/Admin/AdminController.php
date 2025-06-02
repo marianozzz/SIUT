@@ -5,20 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Alumno;
+
 class AdminController extends Controller
 {
      public function index()
     {
-       // $admins = User::whereHas('roles', fn ($q) => $q->where('name', 'Admin'))->get();
-
-        // $alumnos = Alumno::all();
-       // return view('admin.alumnos.index', compact('alumnos'));
+       
         return view('admin.index');
     }
 
     public function create()
     {
-        return view('admin.admins.create');
+        return view('admin.create');
     }
 
     public function store(Request $request)

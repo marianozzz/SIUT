@@ -13,4 +13,12 @@ class Docente extends Model
 {
     return "{$this->nombre} {$this->apellido}";
 }
+
+public function cursos()
+{
+    return $this->belongsToMany(Curso::class, 'asignatura_curso')
+        ->withPivot('asignatura_id', 'tema')
+        ->wherePivot('profesor_id', $this->id);
+}
+
 }

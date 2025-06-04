@@ -21,7 +21,7 @@
 
         {{-- Perfil --}}
         <div class="col-md-4 mb-4">
-            <a href="{{ route('settings.profile') }}" class="text-decoration-none">
+            <a href="{{ route('docentes.perfil.index') }}" class="text-decoration-none">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
                         <i class="bi bi-person-circle display-4 text-success"></i>

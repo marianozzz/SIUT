@@ -58,10 +58,12 @@ class User extends Authenticatable
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
+    public function docente()
+{
+    return $this->hasOne(Docente::class, 'usuario_id');
+}
 
-    public function perfil()
-    {
-        return $this->hasOne(Perfil::class);
-    }
+
+  
 
 }

@@ -12,6 +12,29 @@
         <form action="{{ route('admin.docentes.store') }}" method="POST">
             @csrf
 
+            {{-- DATOS DEL USUARIO --}}
+            <h5 class="mb-3">Datos de Usuario Asociado</h5>
+
+            <div class="form-group">
+                <label for="email">Correo Electrónico (Usuario)</label>
+                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Nombre de Usuario</label>
+                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña (solo si el usuario no existe)</label>
+                <input type="password" name="password" class="form-control">
+            </div>
+
+            <hr>
+
+            {{-- DATOS DEL DOCENTE --}}
+            <h5 class="mb-3">Datos del Docente</h5>
+
             <div class="form-group">
                 <label for="nombre">Nombre</label>
                 <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>

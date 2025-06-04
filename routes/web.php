@@ -21,9 +21,11 @@ use App\Http\Controllers\Admin\CategoriaAsignaturaController;
 
 // Controlador Dashboard Docente
 use App\Http\Controllers\Docente\CursoController as DocenteCursoController;
+use App\Http\Controllers\Docente\PerfilController;
+
 
 // Controlador Dashboard Alumno (crear si no existe)
-use App\Http\Controllers\Alumno\DashboardController as AlumnoDashboardController;
+//use App\Http\Controllers\Alumno\DashboardController as AlumnoDashboardController;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -48,13 +50,18 @@ Route::prefix('docentes')->name('docentes.')->middleware(['auth', 'role:docente'
   
     Route::get('/dashboard', function () {return view('/docentes/dashboard');})->name('home');
     Route::resource('/cursos', DocenteCursoController::class);
+// Perfil del docente como recurso (si solo usas index, edit, update)
+    Route::resource('perfil', PerfilController::class)->only([
+        'index', 'edit', 'update'
+    ]);
+
 
 });
 
 // 👨‍🎓 ALUMNO (crear controlador o vista según necesites)
-Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->group(function () {
+/*Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->group(function () {
     Route::get('/dashboard', [AlumnoDashboardController::class, 'index'])->name('dashboard');
-});
+});*/
 
 // 🛠️ ADMIN
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {

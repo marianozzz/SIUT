@@ -1,17 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Docentes;
+namespace App\Http\Controllers\Docente;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+ use App\Models\Docente;
 
 class PerfilController extends Controller
 {
+
     public function index()
     {
-        $user = Auth::user();
-        return view('docentes.perfil.index', compact('user'));
+        $docente = Docente::with(['usuario', 'cursos'])->where('usuario_id', Auth::id())->firstOrFail();
+
+        return view('docente.perfil', compact('docente'));
     }
 
     public function edit($id)

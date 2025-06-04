@@ -30,4 +30,11 @@ public function asignaturas()
         return $this->belongsTo(Especialidad::class);
     }
 
+    public function docentes()
+{
+    return $this->belongsToMany(Docente::class, 'asignatura_curso')
+        ->withPivot('asignatura_id', 'tema', 'profesor_id');
+}
+
+
 }

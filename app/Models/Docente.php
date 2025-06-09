@@ -8,17 +8,26 @@ class Docente extends Model
 {
     protected $fillable = ['nombre', 'apellido', 'dni', 'telefono', 'direccion'];
 
-
     public function getNombreCompletoAttribute()
-{
-    return "{$this->nombre} {$this->apellido}";
-}
+    {
+        return "{$this->nombre} {$this->apellido}";
+    }
 
-public function cursos()
-{
-    return $this->belongsToMany(Curso::class, 'asignatura_curso')
-        ->withPivot('asignatura_id', 'tema')
-        ->wherePivot('profesor_id', $this->id);
-}
+    // ✅ Relación con la tabla intermedia
+    public function asignaturaCursos()
+    {
+        return $this->hasMany(AsignaturaCurso::class, 'profesor_id');
+    }
 
+    // ✅ Relación con cursos a través de AsignaturaCurso
+    public function cursos()
+    {
+        return $this->hasManyThrough(Curso::class, AsignaturaCurso::class, 'profesor_id', 'id', 'id', 'curso_id');
+    }
+
+    // ✅ Relación con asignaturas a través de AsignaturaCurso
+    public function asignaturas()
+    {
+        return $this->hasManyThrough(Asignatura::class, AsignaturaCurso::class, 'profesor_id', 'id', 'id', 'asignatura_id');
+    }
 }

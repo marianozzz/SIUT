@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoriaAsignaturaController;
+use App\Http\Controllers\Admin\AsignaturaHorarioController;
+use App\Http\Controllers\Admin\TurnoController;
 
 // Controlador Dashboard Docente
 use App\Http\Controllers\Docente\CursoController as DocenteCursoController;
@@ -55,6 +57,9 @@ Route::prefix('docentes')->name('docentes.')->middleware(['auth', 'role:docente'
         'index', 'edit', 'update'
     ]);
 
+    Route::get('docentes/asignaturas/{id}', [DocenteAsignaturaController::class, 'show'])->name('docentes.asignaturas.show');
+
+
 
 });
 
@@ -65,6 +70,7 @@ Route::prefix('docentes')->name('docentes.')->middleware(['auth', 'role:docente'
 
 // 🛠️ ADMIN
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    
     Route::redirect('/', '/admin/dashboard');
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
@@ -77,21 +83,37 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         ->name('asignaturas.asignar-docente');
     Route::post('cursos/{curso}/asignaturas/{asignatura}/asignar-docente', [AsignaturaController::class, 'guardarDocente'])
         ->name('asignaturas.guardar-docente');
+    Route::post('cursos/{curso}/asignaturas/{asignaturaCurso}/horarios', [CursoController::class, 'agregarHorario']);
     Route::get('cursos/{curso}/asignar-alumnos', [CursoController::class, 'formAsignarAlumnos'])->name('cursos.asignar-alumnos');
     Route::post('cursos/{curso}/asignar-alumnos', [CursoController::class, 'guardarAlumnos'])->name('cursos.guardar-alumnos');
     Route::post('cursos/{curso}/asignar-asignatura', [CursoController::class, 'asignarAsignatura'])->name('cursos.asignarAsignatura');
     Route::delete('cursos/{curso}/quitar-asignatura/{asignatura}', [CursoController::class, 'quitarAsignatura'])->name('cursos.quitarAsignatura');
+  //  Route::resource('admin/cursos/{curso}/asignaturas/{asignaturaCurso}/horarios', AsignaturaHorarioController::class)
+  //  ->names('horarios');
+
+
+
+   
 
     Route::resource('divisiones', DivisionController::class);
     Route::resource('asignaturas', AsignaturaController::class);
     Route::resource('especialidades', EspecialidadController::class)
-        ->names('especialidades')
-        ->parameters(['especialidades' => 'especialidad']);
+                    ->names('especialidades')
+                    ->parameters(['especialidades' => 'especialidad']);
+
     Route::resource('categoriasasignaturas', CategoriaAsignaturaController::class);
     Route::resource('planificaciones', PlanificacionController::class);
+
     Route::resource('roles', RoleController::class)->names('roles');
     Route::resource('permisos', PermissionController::class)->names('permisos');
     Route::resource('usuarios', UserController::class);
+
+    Route::resource('turnos', TurnoController::class);
+
+    Route::resource('horarios', AsignaturaHorarioController::class);
+
+
+
 });
 
 // (Opcional) Ruta para middleware de redirección por rol

@@ -8,6 +8,10 @@ use App\Models\Alumno;
 use App\Models\Asignatura;
 use App\Models\Division;
 use App\Models\Especialidad;
+use App\Models\Docente; // o el modelo correcto si usás otro para docentes
+use App\Models\Turno;
+use App\Models\Horario;
+use App\Models\AsignaturaCurso;
 use Illuminate\Http\Request;
 
 class CursoController extends Controller
@@ -48,23 +52,98 @@ class CursoController extends Controller
         $divisiones = Division::all();
         $especialidades = Especialidad::all();
         $asignaturas = Asignatura::all();
+        $turnos = Turno::all();
 
-        return view('admin.cursos.edit', compact('curso', 'divisiones', 'especialidades', 'asignaturas'));
+        return view('admin.cursos.edit', compact('curso', 'divisiones', 'especialidades', 'asignaturas', 'turnos'));
     }
 
-
-public function asignarAsignatura(Request $request, Curso $curso)
+/*public function asignarAsignatura(Request $request, $cursoId)
 {
     $request->validate([
         'asignatura_id' => 'required|exists:asignaturas,id',
         'tema' => 'required|string',
+        'dias' => 'nullable|array',
     ]);
 
-    $curso->asignaturas()->syncWithoutDetaching([
-        $request->asignatura_id => ['tema' => $request->tema]
+    $curso = Curso::findOrFail($cursoId);
+    $asignaturaId = $request->asignatura_id;
+
+    $yaAsignada = $curso->asignaturaCursos()->where('asignatura_id', $asignaturaId)->exists();
+    if ($yaAsignada) {
+        return redirect()->back()->withErrors(['La asignatura ya está asignada a este curso.']);
+    }
+
+    // Crear AsignaturaCurso
+    $asigCurso = AsignaturaCurso::create([
+        'curso_id' => $cursoId,
+        'asignatura_id' => $asignaturaId,
+        'tema' => $request->tema,
     ]);
 
-    return back()->with('success', 'Asignatura asignada con éxito.');
+    // Registrar horarios si hay días seleccionados
+    if ($request->has('dias')) {
+        foreach ($request->dias as $dia => $valores) {
+            if (isset($valores['activo']) && $valores['activo']) {
+                if (!empty($valores['hora_entrada']) && !empty($valores['hora_salida'])) {
+                    Horario::create([
+                        'asignatura_curso_id' => $asigCurso->id,
+                        'dia' => $dia,
+                        'hora_entrada' => $valores['hora_entrada'],
+                        'hora_salida' => $valores['hora_salida'],
+                    ]);
+                }
+            }
+        }
+    }
+
+    return redirect()->back()->with('success', 'Asignatura asignada correctamente con horarios.');
+}*/
+
+public function asignarAsignatura(Request $request, $cursoId)
+{
+     if (!$request->isMethod('post')) {
+        abort(405, 'Método no permitido');
+    }
+    $request->validate([
+        'asignatura_id' => 'required|exists:asignaturas,id',
+        'tema' => 'required|string',
+        'turno_id' => 'required|exists:turnos,id',
+        'dias' => 'nullable|array',
+    ]);
+
+    $curso = Curso::findOrFail($cursoId);
+    $asignaturaId = $request->asignatura_id;
+
+    $yaAsignada = $curso->asignaturaCursos()->where('asignatura_id', $asignaturaId)->exists();
+    if ($yaAsignada) {
+        return redirect()->back()->withErrors(['La asignatura ya está asignada a este curso.']);
+    }
+
+    // Crear relación AsignaturaCurso con turno
+    $asigCurso = AsignaturaCurso::create([
+        'curso_id' => $cursoId,
+        'asignatura_id' => $asignaturaId,
+        'tema' => $request->tema,
+        'turno_id' => $request->turno_id,
+    ]);
+
+    // Crear horarios por día
+    if ($request->has('dias')) {
+        foreach ($request->dias as $dia => $valores) {
+            if (isset($valores['activo']) && $valores['activo']) {
+                // Validar horas
+                if (!empty($valores['hora_entrada']) && !empty($valores['hora_salida'])) {
+                    $asigCurso->horarios()->create([
+                        'dia' => $dia,
+                        'hora_entrada' => $valores['hora_entrada'],
+                        'hora_salida' => $valores['hora_salida'],
+                    ]);
+                }
+            }
+        }
+    }
+
+    return redirect()->with('success', 'Asignatura asignada correctamente al curso.');
 }
 
 public function quitarAsignatura(Curso $curso, Asignatura $asignatura)
@@ -87,7 +166,24 @@ public function quitarAsignatura(Curso $curso, Asignatura $asignatura)
         return redirect()->route('admin.cursos.index')->with('success', 'Curso actualizado correctamente.');
     }
 
+    public function agregarHorario(Request $request, $cursoId, $asignaturaCursoId)
+        {
+           
+            $request->validate([
+                'dia' => 'required|string',
+                'hora_entrada' => 'required',
+                'hora_salida' => 'required',
+            ]);
+//dd($request);
+            Horario::create([
+                'asignatura_curso_id' => $asignaturaCursoId,
+                'dia' => $request->dia,
+                'hora_entrada' => $request->hora_entrada,
+                'hora_salida' => $request->hora_salida,
+            ]);
 
+            return redirect()->back()->with('success', 'Horario agregado correctamente.');
+        }
 
     public function formAsignarAlumnos(Curso $curso)
     {
@@ -95,7 +191,7 @@ public function quitarAsignatura(Curso $curso, Asignatura $asignatura)
         return view('admin.cursos.asignar-alumnos', compact('curso', 'alumnos'));
     }
 
-public function guardarAlumnos(Request $request, Curso $curso)
+    public function guardarAlumnos(Request $request, Curso $curso)
     {
         $request->validate([
             'alumnos' => 'array',
@@ -111,4 +207,6 @@ public function guardarAlumnos(Request $request, Curso $curso)
         $curso->delete();
         return redirect()->route('admin.cursos.index')->with('success', 'Curso eliminado correctamente.');
     }
+
+
 }

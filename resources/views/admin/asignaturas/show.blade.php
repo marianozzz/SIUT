@@ -26,24 +26,40 @@
                             <th>Turno</th>
                             <th>Profesor</th>
                             <th>Tema</th>
+                            <th>Horarios</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($asignatura->cursos as $curso)
+                            @php
+                                $asignaturaCurso = \App\Models\AsignaturaCurso::with('horarios')
+                                    ->where('curso_id', $curso->id)
+                                    ->where('asignatura_id', $asignatura->id)
+                                    ->first();
+                                $docente = \App\Models\Docente::find($curso->pivot->profesor_id);
+                            @endphp
                             <tr>
                                 <td>{{ $curso->nivel }}°</td>
                                 <td>{{ $curso->division->nombre ?? 'Sin división' }}</td>
                                 <td>{{ ucfirst($curso->turno) }}</td>
-                                <td>
-                                 @php
-                                    $docente = \App\Models\Docente::find($curso->pivot->profesor_id);
-                                @endphp
-
-                                {{ $docente ? $docente->nombre_completo : 'No asignado' }}
-
-                                </td>
+                                <td>{{ $docente ? $docente->nombre_completo : 'No asignado' }}</td>
                                 <td>{{ $curso->pivot->tema ?? 'No especificado' }}</td>
+                                <td>
+                                    @if($asignaturaCurso && $asignaturaCurso->horarios->count())
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach($asignaturaCurso->horarios as $horario)
+                                                <li>
+                                                    <strong>{{ ucfirst($horario->dia) }}:</strong>
+                                                    {{ \Carbon\Carbon::parse($horario->hora_entrada)->format('H:i') }} -
+                                                    {{ \Carbon\Carbon::parse($horario->hora_salida)->format('H:i') }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <em>Sin horarios</em>
+                                    @endif
+                                </td>
                                 <td>
                                     <a href="{{ route('admin.asignaturas.show', [$asignatura->id, $curso->id]) }}" class="btn btn-sm btn-info">
                                         Ver programa

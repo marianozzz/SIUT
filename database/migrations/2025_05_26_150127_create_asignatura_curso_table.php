@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('asignatura_curso', function (Blueprint $table) {
+        Schema::create('asignatura_cursos', function (Blueprint $table) {
             $table->id();
-            $table->text('tema')->nullable(); // Tema específico para el curso
+            $table->text('tema')->nullable();
             $table->unsignedBigInteger('profesor_id')->nullable();
-           
+            $table->foreign('profesor_id')->references('id')->on('docentes')->onDelete('set null');
             $table->foreignId('curso_id')->constrained()->onDelete('cascade');
             $table->foreignId('asignatura_id')->constrained()->onDelete('cascade');
-            $table->foreign('profesor_id')->references('id')->on('Docentes')->onDelete('set null');
-            
+            $table->foreignId('turno_id')->nullable()->constrained('turnos');
             $table->timestamps();
         });
     }

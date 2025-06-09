@@ -369,6 +369,11 @@ return [
             'icon' => 'fas fa-graduation-cap',
         ],
           [
+            'text' => 'Turnos',
+            'route' => 'admin.turnos.index',
+            'icon' => 'fas fa-graduation-cap',
+        ],
+          [
             'text' => 'Planificaciones',
             'route' => 'admin.planificaciones.index',
             'icon' => 'fas fa-graduation-cap',

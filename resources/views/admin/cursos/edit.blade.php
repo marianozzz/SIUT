@@ -3,7 +3,7 @@
 @section('title', 'Editar Curso')
 
 @section('content_header')
-    <h1>Editar Curso: {{ $curso->nombre }}</h1>
+    <h1>Editar Curso: {{ $curso->nivel }} - {{ $curso->division->nombre }}</h1>
 @stop
 
 @section('content')
@@ -23,6 +23,7 @@
         </x-adminlte-alert>
     @endif
 
+    {{-- Formulario edición del curso --}}
     <form method="POST" action="{{ route('admin.cursos.update', $curso) }}">
         @csrf
         @method('PUT')
@@ -51,9 +52,14 @@
 
     <hr>
 
+    {{-- Asignar nueva asignatura --}}
     <h3>Asignar Asignatura</h3>
-    <form method="POST" action="{{ route('admin.cursos.asignarAsignatura', $curso->id) }}">
-        @csrf
+
+
+    <form method="POST" action="{{route('admin.horarios.store')}}">
+     @csrf
+
+    <input type="hidden" name="curso_id" value="{{ $curso->id }}">
 
         <x-adminlte-select name="asignatura_id" label="Asignatura" required>
             @foreach($asignaturas as $asignatura)
@@ -61,26 +67,84 @@
             @endforeach
         </x-adminlte-select>
 
+        <x-adminlte-select name="turno_id" label="Turno" required>
+            <option value="">-- Seleccionar Turno --</option>
+            @foreach($turnos as $turno)
+                <option value="{{ $turno->id }}">{{ ucfirst($turno->nombre) }}</option>
+            @endforeach
+        </x-adminlte-select>
+
         <x-adminlte-textarea name="tema" label="Tema para este curso" rows=3 required></x-adminlte-textarea>
+
+        {{-- Días y horarios --}}
+        <label class="mt-3">Días y horarios</label>
+        @php
+            $dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+        @endphp
+
+        @foreach($dias as $dia)
+            <div class="row align-items-center mb-2">
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <input type="checkbox" name="dias[{{ $dia }}][activo]" id="check-{{ $dia }}" class="form-check-input" />
+                        <label class="form-check-label" for="check-{{ $dia }}">{{ ucfirst($dia) }}</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <input type="time" name="dias[{{ $dia }}][hora_entrada]" class="form-control" placeholder="Hora inicio">
+                </div>
+                <div class="col-md-2">
+                    <input type="time" name="dias[{{ $dia }}][hora_salida]" class="form-control" placeholder="Hora fin">
+                </div>
+            </div>
+        @endforeach
 
         <x-adminlte-button type="submit" label="Asignar Asignatura" theme="success" class="mt-2" />
     </form>
 
+
     <hr>
 
+    {{-- Lista de asignaturas asignadas con horarios --}}
     <h3>Asignaturas Asignadas</h3>
-    @if($curso->asignaturas->count())
+    @php
+        $asignadas = $curso->asignaturaCursos()->with('asignatura', 'horarios', 'turno')->get();
+    @endphp
+
+    @if($asignadas->count())
         <ul class="list-group">
-            @foreach($curso->asignaturas as $asignatura)
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+            @foreach($asignadas as $asigCurso)
+                <li class="list-group-item">
                     <div>
-                        <strong>{{ $asignatura->nombre }}</strong><br>
-                        <small>Tema: {{ $asignatura->pivot->tema }}</small>
+                        <strong>{{ $asigCurso->asignatura->nombre }}</strong><br>
+                        <small>
+                            Tema: {{ $asigCurso->tema ?? 'Sin tema' }}<br>
+                            Turno: {{ $asigCurso->turno->nombre ?? 'No asignado' }}
+                        </small>
+
+                        <div class="mt-2">
+                            <strong>Horarios:</strong>
+                            @if($asigCurso->horarios->isEmpty())
+                                <p class="text-muted">No hay horarios asignados.</p>
+                            @else
+                                <ul>
+                                    @foreach($asigCurso->horarios as $horario)
+                                        <li>
+                                            {{ ucfirst($horario->dia) }}:
+                                            {{ \Carbon\Carbon::parse($horario->hora_entrada)->format('H:i') }} -
+                                            {{ \Carbon\Carbon::parse($horario->hora_salida)->format('H:i') }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
                     </div>
-                    <form method="POST" action="{{ route('admin.cursos.quitarAsignatura', [$curso->id, $asignatura->id]) }}">
+
+                    {{-- Botón eliminar asignación --}}
+                    <form method="POST" action="{{ route('admin.cursos.quitarAsignatura', [$curso->id, $asigCurso->asignatura->id]) }}" class="mt-2">
                         @csrf
                         @method('DELETE')
-                        <x-adminlte-button type="submit" theme="danger" icon="fas fa-trash" title="Quitar" />
+                        <x-adminlte-button type="submit" theme="danger" icon="fas fa-trash" title="Quitar Asignación" />
                     </form>
                 </li>
             @endforeach

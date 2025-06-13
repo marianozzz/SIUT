@@ -34,7 +34,7 @@
 
         {{-- Calendario --}}
         <div class="col-md-4 mb-4">
-            <a href="#" class="text-decoration-none">
+            <a href="" class="text-decoration-none">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
                         <i class="bi bi-calendar-event display-4 text-danger"></i>

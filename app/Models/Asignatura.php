@@ -24,5 +24,13 @@ class Asignatura extends Model
                     ->withPivot(['tema', 'profesor_id']) // corregido
                     ->withTimestamps();
     }
+
+    // app/Models/AsignaturaCurso.php
+
+public function curso()
+{
+    return $this->belongsTo(Curso::class);
+}
+
 }
 

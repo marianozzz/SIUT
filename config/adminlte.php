@@ -365,19 +365,25 @@ return [
         ],
         [
             'text' => 'Nivel (Ciclo)',
-            'route' => '',
-            'icon' => 'fas fa-graduation-cap',
+            'route' => 'admin.ciclos.index',
+            'icon' => 'fas fa-layer-group', // Representa niveles o agrupaciones
         ],
-          [
+        [
             'text' => 'Turnos',
             'route' => 'admin.turnos.index',
-            'icon' => 'fas fa-graduation-cap',
+            'icon' => 'fas fa-clock', // Representa horarios/turnos
         ],
           [
+            'text' => 'Grupos Talleres',
+            'route' => 'admin.grupos.index',
+            'icon' => 'fas fa-clock', // Representa horarios/turnos
+        ],
+        [
             'text' => 'Planificaciones',
             'route' => 'admin.planificaciones.index',
-            'icon' => 'fas fa-graduation-cap',
+            'icon' => 'fas fa-calendar-alt', // Representa planificación o calendario
         ],
+
 
         ['header' => 'SISTEMA',],
 

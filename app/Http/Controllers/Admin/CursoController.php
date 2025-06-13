@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Curso;
+use App\Models\Ciclo;
 use App\Models\Alumno;
 use App\Models\Asignatura;
 use App\Models\Division;
@@ -24,23 +25,36 @@ class CursoController extends Controller
         return view('admin.cursos.index', compact('cursos'));
     }
 
-    public function create()
-    {
-        $divisiones = Division::all(); // si usas divisiones
-        return view('admin.cursos.create', compact('divisiones'));
+   public function create()
+{
+    $divisiones = Division::all();
+    $especialidades = Especialidad::all();
+    $ciclos = Ciclo::all();
+
+    return view('admin.cursos.create', compact('divisiones', 'especialidades', 'ciclos'));
+}
+
+
+  public function store(Request $request)
+{
+    // Validación base
+    $validated = $request->validate([
+        'nivel' => 'required|integer|min:1|max:7',
+        'division_id' => 'required|exists:divisions,id',
+        'ciclo_id' => 'required|exists:ciclos,id',
+        'especialidad_id' => 'nullable|exists:especialidades,id',
+    ]);
+
+    // Verificación lógica: solo permitir especialidad si nivel es >= 4
+    if ($validated['nivel'] < 4) {
+        $validated['especialidad_id'] = null;
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nivel' => 'required|string|max:255',
-            'division_id' => 'required|exists:divisions,id'
-        ]);
+    Curso::create($validated);
 
-        Curso::create($request->all());
+    return redirect()->route('admin.cursos.index')->with('success', 'Curso creado correctamente.');
+}
 
-        return redirect()->route('admin.cursos.index')->with('success', 'Curso creado correctamente.');
-    }
 
     public function show(Curso $curso)
     {
@@ -56,48 +70,6 @@ class CursoController extends Controller
 
         return view('admin.cursos.edit', compact('curso', 'divisiones', 'especialidades', 'asignaturas', 'turnos'));
     }
-
-/*public function asignarAsignatura(Request $request, $cursoId)
-{
-    $request->validate([
-        'asignatura_id' => 'required|exists:asignaturas,id',
-        'tema' => 'required|string',
-        'dias' => 'nullable|array',
-    ]);
-
-    $curso = Curso::findOrFail($cursoId);
-    $asignaturaId = $request->asignatura_id;
-
-    $yaAsignada = $curso->asignaturaCursos()->where('asignatura_id', $asignaturaId)->exists();
-    if ($yaAsignada) {
-        return redirect()->back()->withErrors(['La asignatura ya está asignada a este curso.']);
-    }
-
-    // Crear AsignaturaCurso
-    $asigCurso = AsignaturaCurso::create([
-        'curso_id' => $cursoId,
-        'asignatura_id' => $asignaturaId,
-        'tema' => $request->tema,
-    ]);
-
-    // Registrar horarios si hay días seleccionados
-    if ($request->has('dias')) {
-        foreach ($request->dias as $dia => $valores) {
-            if (isset($valores['activo']) && $valores['activo']) {
-                if (!empty($valores['hora_entrada']) && !empty($valores['hora_salida'])) {
-                    Horario::create([
-                        'asignatura_curso_id' => $asigCurso->id,
-                        'dia' => $dia,
-                        'hora_entrada' => $valores['hora_entrada'],
-                        'hora_salida' => $valores['hora_salida'],
-                    ]);
-                }
-            }
-        }
-    }
-
-    return redirect()->back()->with('success', 'Asignatura asignada correctamente con horarios.');
-}*/
 
 public function asignarAsignatura(Request $request, $cursoId)
 {

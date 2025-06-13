@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Curso extends Model
 {
-    protected $fillable = ['nivel', 'especialidad_id', 'division_id'];
+    protected $fillable = ['nivel', 'especialidad_id', 'division_id', 'ciclo_id'];
+
 
     public function division()
     {
@@ -18,10 +19,12 @@ class Curso extends Model
         return $this->belongsTo(Especialidad::class);
     }
 
-    public function alumnos()
-    {
-        return $this->belongsToMany(Alumno::class, 'alumno_curso');
-    }
+ // Curso.php
+public function alumnos()
+{
+    return $this->belongsToMany(Alumno::class)->withTimestamps();
+}
+
 
     // ✅ Relación directa con AsignaturaCurso
     public function asignaturaCursos()
@@ -37,6 +40,10 @@ class Curso extends Model
                     ->withTimestamps();
     }
 
+    public function ciclo()
+    {
+        return $this->belongsTo(Ciclo::class);
+    }
 
 
     // ✅ Acceso a docentes a través de AsignaturaCurso

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
+
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -20,6 +22,17 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoriaAsignaturaController;
 use App\Http\Controllers\Admin\AsignaturaHorarioController;
 use App\Http\Controllers\Admin\TurnoController;
+use App\Http\Controllers\Admin\CicloController;
+use App\Http\Controllers\Admin\GrupoTallerController;
+
+
+
+
+
+Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+
 
 // Controlador Dashboard Docente
 use App\Http\Controllers\Docente\CursoController as DocenteCursoController;
@@ -35,9 +48,9 @@ Route::get('/', function () {
 })->name('home');
 
 // Dashboard genérico si no hay rol reconocido
-Route::view('dashboard', 'dashboard')
+/*Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+    ->name('dashboard');*/
 
 // ⚙️ Configuraciones de usuario
 Route::middleware(['auth'])->group(function () {
@@ -56,10 +69,11 @@ Route::prefix('docentes')->name('docentes.')->middleware(['auth', 'role:docente'
     Route::resource('perfil', PerfilController::class)->only([
         'index', 'edit', 'update'
     ]);
-
-    Route::get('docentes/asignaturas/{id}', [DocenteAsignaturaController::class, 'show'])->name('docentes.asignaturas.show');
-
-
+/*
+Route::get('/calendario', function () {
+    return view('docentes.calendario.index');
+});*/
+    //Route::get('docentes/asignaturas/{id}', [DocenteAsignaturaController::class, 'show'])->name('docentes.asignaturas.show');
 
 });
 
@@ -77,8 +91,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('docentes', DocenteController::class);
     Route::resource('alumnos', AlumnoController::class);
     Route::resource('admin', AdminController::class);
-
+    Route::resource('ciclos', CicloController::class);
     Route::resource('cursos', CursoController::class);
+
+    Route::resource('grupos', GrupoTallerController::class);
+    Route::get('grupos/{grupo}/alumnos', [App\Http\Controllers\Admin\GrupoTallerController::class, 'editAlumnos'])->name('grupos.editAlumnos');
+    Route::put('grupos/{grupo}/alumnos', [App\Http\Controllers\Admin\GrupoTallerController::class, 'updateAlumnos'])->name('grupos.updateAlumnos');
+
     Route::get('cursos/{curso}/asignaturas/{asignatura}/asignar-docente', [AsignaturaController::class, 'asignarDocente'])
         ->name('asignaturas.asignar-docente');
     Route::post('cursos/{curso}/asignaturas/{asignatura}/asignar-docente', [AsignaturaController::class, 'guardarDocente'])
@@ -88,13 +107,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::post('cursos/{curso}/asignar-alumnos', [CursoController::class, 'guardarAlumnos'])->name('cursos.guardar-alumnos');
     Route::post('cursos/{curso}/asignar-asignatura', [CursoController::class, 'asignarAsignatura'])->name('cursos.asignarAsignatura');
     Route::delete('cursos/{curso}/quitar-asignatura/{asignatura}', [CursoController::class, 'quitarAsignatura'])->name('cursos.quitarAsignatura');
-  //  Route::resource('admin/cursos/{curso}/asignaturas/{asignaturaCurso}/horarios', AsignaturaHorarioController::class)
-  //  ->names('horarios');
-
-
-
-   
-
+ 
     Route::resource('divisiones', DivisionController::class);
     Route::resource('asignaturas', AsignaturaController::class);
     Route::resource('especialidades', EspecialidadController::class)
@@ -112,6 +125,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     Route::resource('horarios', AsignaturaHorarioController::class);
 
+Route::get('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'asignarCurso'])->name('admin.alumnos.asignarCurso');
+Route::post('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'guardarCurso']);
+
+Route::resource('grupos', GrupoTallerController::class);
+
+
+// AJAX: obtener asignaturas de un curso
+Route::get('cursos/{curso}/asignaturas', [GrupoTallerController::class, 'asignaturasDelCurso']);
+Route::get('cursos/{curso}/alumnos', [GrupoTallerController::class, 'alumnosDelCurso']);
+
+// web.php
+Route::get('/admin/asignaturas-cursos/{id}/alumnos', [GrupoTallerController::class, 'getAlumnosPorAsignaturaCurso']);
 
 
 });

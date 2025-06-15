@@ -27,15 +27,16 @@
                 {{-- Nombre del grupo --}}
                 <div class="form-group">
                     <label for="nombre">Nombre del Grupo (Ej: A, B, C)</label>
-                    <input type="text" name="nombre" class="form-control" value="{{ old('nombre', $grupo->nombre) }}" required>
+                    <input type="text" name="nombre" id="nombre" class="form-control" 
+                           value="{{ old('nombre', $grupo->nombre) }}" required>
                 </div>
 
-                {{-- Mostrar o seleccionar asignaturaCurso --}}
+                {{-- Asignatura del curso --}}
                 @if ($grupo->asignaturaCurso)
                     <div class="form-group">
                         <label>Curso</label>
                         <input type="text" class="form-control" 
-                               value="{{ $grupo->asignaturaCurso->curso->nivel }} - {{ $grupo->asignaturaCurso->curso->division->nombre }}"
+                               value="{{ $grupo->asignaturaCurso->curso->nivel }} {{ $grupo->asignaturaCurso->curso->division->nombre }}"
                                readonly>
                     </div>
 
@@ -46,7 +47,7 @@
                                readonly>
                     </div>
 
-                    {{-- Campo oculto para enviar asignatura_curso_id --}}
+                    {{-- Oculto para enviar el ID --}}
                     <input type="hidden" name="asignatura_curso_id" value="{{ $grupo->asignatura_curso_id }}">
                 @else
                     <div class="form-group">
@@ -81,7 +82,7 @@
                                 </label>
                             </div>
                         @empty
-                            <p>No hay alumnos disponibles para este grupo.</p>
+                            <p class="text-muted">No hay alumnos disponibles para este curso.</p>
                         @endforelse
                     </div>
                 </div>
@@ -100,36 +101,28 @@
 
 @section('js')
 <script>
-    // Si se puede cambiar la asignatura (cuando no está asignada)
     const asignaturaSelect = document.getElementById('asignatura_curso_id');
     const alumnosContainer = document.getElementById('alumnos-container');
 
     if (asignaturaSelect) {
         asignaturaSelect.addEventListener('change', function () {
             const asignaturaCursoId = this.value;
-
-            if (!asignaturaCursoId) {
-                alumnosContainer.innerHTML = '<p class="text-muted">Seleccione una asignatura para ver los alumnos.</p>';
-                return;
-            }
-
-            // Obtener el curso_id desde la opción seleccionada
             const cursoId = this.options[this.selectedIndex].dataset.curso;
 
             if (!cursoId) {
-                alumnosContainer.innerHTML = '<p class="text-danger">Error: la asignatura no tiene curso asociado.</p>';
+                alumnosContainer.innerHTML = '<p class="text-danger">Seleccione un curso válido.</p>';
                 return;
             }
 
             fetch(`/admin/cursos/${cursoId}/alumnos`)
                 .then(res => res.json())
                 .then(data => {
+                    alumnosContainer.innerHTML = '';
+
                     if (data.length === 0) {
-                        alumnosContainer.innerHTML = '<p>No hay alumnos en este curso.</p>';
+                        alumnosContainer.innerHTML = '<p class="text-muted">No hay alumnos en este curso.</p>';
                         return;
                     }
-
-                    alumnosContainer.innerHTML = '';
 
                     data.forEach(alumno => {
                         const div = document.createElement('div');
@@ -145,7 +138,7 @@
                         const label = document.createElement('label');
                         label.classList.add('form-check-label');
                         label.setAttribute('for', 'alumno_' + alumno.id);
-                        label.textContent = alumno.apellido + ', ' + alumno.nombre;
+                        label.textContent = `${alumno.apellido}, ${alumno.nombre}`;
 
                         div.appendChild(checkbox);
                         div.appendChild(label);
@@ -153,10 +146,11 @@
                     });
                 })
                 .catch(() => {
-                    alumnosContainer.innerHTML = '<p class="text-danger">Error al cargar alumnos.</p>';
+                    alumnosContainer.innerHTML = '<p class="text-danger">Error al cargar los alumnos.</p>';
                 });
         });
     }
 </script>
 @endsection
+
 

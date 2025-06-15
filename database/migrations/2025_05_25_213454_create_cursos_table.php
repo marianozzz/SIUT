@@ -14,9 +14,11 @@ return new class extends Migration
             Schema::create('cursos', function (Blueprint $table) {
                 $table->id();
                 $table->string('nivel');
-                $table->unsignedBigInteger('especialidad_id')->nullable(); // ahora puede ser null
+                $table->unsignedBigInteger('especialidad_id')->nullable();
+                $table->foreign('especialidad_id')
+                    ->references('id')->on('especialidades')
+                    ->onDelete('cascade');
                 $table->foreignId('ciclo_id')->constrained()->onDelete('cascade');
-                $table->foreign('especialidad_id')->references('id')->on('especialidades')->onDelete('cascade');
                 $table->foreignId('division_id')->constrained()->onDelete('cascade');
                 $table->timestamps();
             });

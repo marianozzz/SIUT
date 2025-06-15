@@ -30,27 +30,60 @@
                             <th>Curso</th>
                             <th>Grupo</th>
                             <th>Asignatura</th>
+                            <th>Profesor</th>
                             <th>Día y Horario</th>
+                            <th>Alumnos</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($grupos as $grupo)
                             <tr>
+                                {{-- CURSO --}}
                                 <td>
-                                    {{ $grupo->asignaturaCurso->curso->nivel ?? '' }}
+                                    {{ $grupo->asignaturaCurso->curso->nivel ?? '-' }}
                                     {{ $grupo->asignaturaCurso->curso->division->nombre ?? '' }}
                                 </td>
+
+                                {{-- GRUPO --}}
                                 <td>{{ $grupo->nombre }}</td>
+
+                                {{-- ASIGNATURA --}}
                                 <td>{{ $grupo->asignaturaCurso->asignatura->nombre ?? '-' }}</td>
-                                <td>{{ $grupo->dia ?? '-' }} {{ $grupo->horario ?? '' }}</td>
+
+                                {{-- PROFESOR --}}
                                 <td>
-                                    <a href="{{ route('admin.grupos.edit', $grupo) }}" class="btn btn-sm btn-warning" title="Editar">
+                                    {{ $grupo->asignaturaCurso->profesor->nombre_completo ?? '-' }}
+                                </td>
+
+                                {{-- HORARIOS --}}
+                                <td>
+                                    @forelse ($grupo->asignaturaCurso->horarios as $horario)
+                                        <div>
+                                            {{ $horario->dia }}:
+                                            {{ \Carbon\Carbon::parse($horario->hora_entrada)->format('H:i') }} -
+                                            {{ \Carbon\Carbon::parse($horario->hora_salida)->format('H:i') }}
+                                        </div>
+                                    @empty
+                                        <span class="text-muted">Sin horario</span>
+                                    @endforelse
+                                </td>
+
+                                {{-- ALUMNOS ASIGNADOS --}}
+                                <td>
+                                    {{ $grupo->alumnos->count() }} alumno(s)
+                                </td>
+
+                                {{-- ACCIONES --}}
+                                <td>
+                                    <a href="{{ route('admin.grupos.edit', $grupo) }}" class="btn btn-sm btn-warning" title="Editar Grupo">
                                         <i class="fas fa-edit"></i>
                                     </a>
+
                                     <a href="{{ route('admin.grupos.editAlumnos', $grupo) }}" class="btn btn-sm btn-info" title="Asignar Alumnos">
                                         <i class="fas fa-user-plus"></i>
                                     </a>
+
                                     <form action="{{ route('admin.grupos.destroy', $grupo) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
@@ -67,3 +100,4 @@
         </div>
     @endif
 @stop
+

@@ -36,6 +36,7 @@ public function index()
 
 public function store(Request $request)
 {
+    
     $request->validate([
         'nombre' => 'required|string|max:10',
         'asignatura_curso_id' => 'required|exists:asignatura_cursos,id',
@@ -59,6 +60,7 @@ public function store(Request $request)
         // Mostrar formulario para editar grupo
     public function edit(GrupoTaller $grupo)
 {
+   
     $asignaturasCursos = AsignaturaCurso::with('curso.division', 'asignatura')->get();
 
     // Obtener alumnos del curso correspondiente (si asignaturaCurso existe)
@@ -74,26 +76,27 @@ public function store(Request $request)
 
 
 
-    // Actualizar grupo y alumnos
-    public function update(Request $request, GrupoTaller $grupo)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:10',
-            'curso_id' => 'required|exists:cursos,id',
-            'alumnos' => 'nullable|array',
-            'alumnos.*' => 'exists:alumnos,id',
-        ]);
+public function update(Request $request, GrupoTaller $grupo)
+{
+    $request->validate([
+        'nombre' => 'required|string|max:10',
+        'asignatura_curso_id' => 'required|exists:asignatura_cursos,id',
+        'alumnos' => 'nullable|array',
+        'alumnos.*' => 'exists:alumnos,id',
+    ]);
 
-        $grupo->update([
-            'nombre' => $request->nombre,
-            'curso_id' => $request->curso_id,
-        ]);
+    // Actualiza el nombre y el vínculo a la asignatura_curso
+    $grupo->update([
+        'nombre' => $request->nombre,
+        'asignatura_curso_id' => $request->asignatura_curso_id,
+    ]);
 
-        // Actualizar alumnos asignados al grupo
-        $grupo->alumnos()->sync($request->alumnos ?? []);
+    // Sincroniza alumnos
+    $grupo->alumnos()->sync($request->alumnos ?? []);
 
-        return redirect()->route('admin.grupos.index')->with('success', 'Grupo actualizado correctamente.');
-    }
+    return redirect()->route('admin.grupos.index')->with('success', 'Grupo actualizado correctamente.');
+}
+
 
     // Eliminar grupo
     public function destroy(GrupoTaller $grupo)

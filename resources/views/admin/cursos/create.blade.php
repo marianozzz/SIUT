@@ -3,13 +3,13 @@
 @section('title', 'Crear Curso')
 
 @section('content_header')
-    <h1>Crear nuevo Curso</h1>
+    <h1>Nuevo Curso</h1>
 @stop
 
 @section('content')
     @if ($errors->any())
         <div class="alert alert-danger">
-            <ul>
+            <ul class="mb-0">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -20,64 +20,88 @@
     <form action="{{ route('admin.cursos.store') }}" method="POST">
         @csrf
 
-        <div class="form-group">
-            <label for="nivel">Nivel (Ej: 1 a 7)</label>
-            <input type="number" name="nivel" class="form-control" value="{{ old('nivel') }}" min="1" max="7" required>
-        </div>
+        <div class="card">
+            <div class="card-body">
 
-        <div class="form-group">
-            <label for="division_id">División</label>
-            <select name="division_id" class="form-control" required>
-                <option value="">Seleccione una división</option>
-                @foreach($divisiones as $division)
-                    <option value="{{ $division->id }}">{{ $division->nombre }}</option>
-                @endforeach
-            </select>
-        </div>
+                {{-- Nivel --}}
+                <div class="form-group">
+                    <label for="nivel">Nivel del curso <small>(1º a 7º)</small></label>
+                    <input type="number" name="nivel" id="nivel" class="form-control" 
+                           value="{{ old('nivel') }}" min="1" max="7" required>
+                </div>
 
-        <div class="form-group">
-            <label for="ciclo_id">Ciclo</label>
-            <select name="ciclo_id" class="form-control" required>
-                <option value="">Seleccione un ciclo</option>
-                @foreach($ciclos as $ciclo)
-                    <option value="{{ $ciclo->id }}">{{ $ciclo->nombre }}</option>
-                @endforeach
-            </select>
-        </div>
+                {{-- División --}}
+                <div class="form-group">
+                    <label for="division_id">División</label>
+                    <select name="division_id" id="division_id" class="form-control" required>
+                        <option value="">Seleccione una división</option>
+                        @foreach($divisiones as $division)
+                            <option value="{{ $division->id }}" 
+                                    {{ old('division_id') == $division->id ? 'selected' : '' }}>
+                                {{ $division->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <div class="form-group" id="especialidad-group" style="display: none;">
-            <label for="especialidad_id">Especialidad (solo de 4° a 7°)</label>
-            <select name="especialidad_id" class="form-control">
-                <option value="">Seleccione una especialidad</option>
-                @foreach($especialidades as $especialidad)
-                    <option value="{{ $especialidad->id }}">{{ $especialidad->nombre }}</option>
-                @endforeach
-            </select>
-        </div>
+                {{-- Ciclo --}}
+                <div class="form-group">
+                    <label for="ciclo_id">Ciclo Lectivo</label>
+                    <select name="ciclo_id" id="ciclo_id" class="form-control" required>
+                        <option value="">Seleccione un ciclo</option>
+                        @foreach($ciclos as $ciclo)
+                            <option value="{{ $ciclo->id }}" 
+                                    {{ old('ciclo_id') == $ciclo->id ? 'selected' : '' }}>
+                                {{ $ciclo->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <button type="submit" class="btn btn-success">Guardar</button>
-        <a href="{{ route('admin.cursos.index') }}" class="btn btn-secondary">Volver</a>
+                {{-- Especialidad --}}
+                <div class="form-group" id="especialidad-group" style="display: none;">
+                    <label for="especialidad_id">Especialidad <small>(solo desde 4º año)</small></label>
+                    <select name="especialidad_id" id="especialidad_id" class="form-control">
+                        <option value="">Seleccione una especialidad</option>
+                        @foreach($especialidades as $especialidad)
+                            <option value="{{ $especialidad->id }}" 
+                                    {{ old('especialidad_id') == $especialidad->id ? 'selected' : '' }}>
+                                {{ $especialidad->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="card-footer text-end">
+                <a href="{{ route('admin.cursos.index') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar Curso
+                </button>
+            </div>
+        </div>
     </form>
 @stop
 
 @section('js')
 <script>
     function toggleEspecialidad() {
-        const nivelInput = document.querySelector('input[name="nivel"]');
+        const nivel = parseInt(document.getElementById('nivel').value);
         const especialidadGroup = document.getElementById('especialidad-group');
 
-        const nivel = parseInt(nivelInput.value);
         if (!isNaN(nivel) && nivel >= 4) {
             especialidadGroup.style.display = 'block';
         } else {
             especialidadGroup.style.display = 'none';
+            document.getElementById('especialidad_id').value = ''; // limpiar si se oculta
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const nivelInput = document.querySelector('input[name="nivel"]');
+    document.addEventListener('DOMContentLoaded', () => {
+        const nivelInput = document.getElementById('nivel');
         nivelInput.addEventListener('input', toggleEspecialidad);
-        toggleEspecialidad();
+        toggleEspecialidad(); // inicial
     });
 </script>
 @endsection

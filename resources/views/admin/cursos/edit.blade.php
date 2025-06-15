@@ -55,11 +55,10 @@
     {{-- Asignar nueva asignatura --}}
     <h3>Asignar Asignatura</h3>
 
-
     <form method="POST" action="{{route('admin.horarios.store')}}">
-     @csrf
+        @csrf
 
-    <input type="hidden" name="curso_id" value="{{ $curso->id }}">
+        <input type="hidden" name="curso_id" value="{{ $curso->id }}">
 
         <x-adminlte-select name="asignatura_id" label="Asignatura" required>
             @foreach($asignaturas as $asignatura)
@@ -102,50 +101,57 @@
         <x-adminlte-button type="submit" label="Asignar Asignatura" theme="success" class="mt-2" />
     </form>
 
-
     <hr>
 
-    {{-- Lista de asignaturas asignadas con horarios --}}
+    {{-- Lista de asignaturas agrupadas --}}
     <h3>Asignaturas Asignadas</h3>
     @php
         $asignadas = $curso->asignaturaCursos()->with('asignatura', 'horarios', 'turno')->get();
+        $agrupadas = $asignadas->groupBy('asignatura_id');
     @endphp
 
-    @if($asignadas->count())
+    @if($agrupadas->count())
         <ul class="list-group">
-            @foreach($asignadas as $asigCurso)
+            @foreach($agrupadas as $asignaturaId => $items)
+                @php
+                    $asignaturaNombre = $items->first()->asignatura->nombre;
+                @endphp
                 <li class="list-group-item">
-                    <div>
-                        <strong>{{ $asigCurso->asignatura->nombre }}</strong><br>
-                        <small>
-                            Tema: {{ $asigCurso->tema ?? 'Sin tema' }}<br>
-                            Turno: {{ $asigCurso->turno->nombre ?? 'No asignado' }}
-                        </small>
+                    <h5 class="mb-2">{{ $asignaturaNombre }}</h5>
 
-                        <div class="mt-2">
-                            <strong>Horarios:</strong>
-                            @if($asigCurso->horarios->isEmpty())
-                                <p class="text-muted">No hay horarios asignados.</p>
-                            @else
-                                <ul>
-                                    @foreach($asigCurso->horarios as $horario)
-                                        <li>
-                                            {{ ucfirst($horario->dia) }}:
-                                            {{ \Carbon\Carbon::parse($horario->hora_entrada)->format('H:i') }} -
-                                            {{ \Carbon\Carbon::parse($horario->hora_salida)->format('H:i') }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
-                    </div>
+                    <ul class="mb-2">
+                        @foreach($items as $asigCurso)
+                            <li class="mb-2">
+                                <div>
+                                    <strong>Tema:</strong> {{ $asigCurso->tema ?? 'Sin tema' }}<br>
+                                    <strong>Turno:</strong> {{ ucfirst($asigCurso->turno->nombre ?? 'No asignado') }}<br>
 
-                    {{-- Botón eliminar asignación --}}
-                    <form method="POST" action="{{ route('admin.cursos.quitarAsignatura', [$curso->id, $asigCurso->asignatura->id]) }}" class="mt-2">
-                        @csrf
-                        @method('DELETE')
-                        <x-adminlte-button type="submit" theme="danger" icon="fas fa-trash" title="Quitar Asignación" />
-                    </form>
+                                    <strong>Horarios:</strong>
+                                    @if($asigCurso->horarios->isEmpty())
+                                        <span class="text-muted">Sin horarios asignados</span>
+                                    @else
+                                        <ul>
+                                            @foreach($asigCurso->horarios as $horario)
+                                                <li>
+                                                    {{ ucfirst($horario->dia) }}:
+                                                    {{ \Carbon\Carbon::parse($horario->hora_entrada)->format('H:i') }} -
+                                                    {{ \Carbon\Carbon::parse($horario->hora_salida)->format('H:i') }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+
+                                {{-- Botón eliminar solo esta asignación --}}
+                                <form method="POST" action="{{ route('admin.cursos.quitarAsignatura', [$curso->id, $asigCurso->asignatura->id]) }}" class="mt-1">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="asignatura_curso_id" value="{{ $asigCurso->id }}">
+                                    <x-adminlte-button type="submit" theme="danger" icon="fas fa-trash" title="Quitar esta asignación" />
+                                </form>
+                            </li>
+                        @endforeach
+                    </ul>
                 </li>
             @endforeach
         </ul>

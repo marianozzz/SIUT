@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('categorias_asignaturas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->unique();
+            $table->text('descripcion')->nullable(); // Nuevo campo agregado
             $table->timestamps();
         });
     }

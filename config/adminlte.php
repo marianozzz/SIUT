@@ -327,26 +327,37 @@ return [
             'label' => 4,
             'label_color' => 'success',
         ],
-        [ 'header' => 'GESTIÓN ACADÉMICA'],
-        [
-            'text' => 'Alumnos',
-            'route' => 'admin.alumnos.index',
-            'icon' => 'fas fa-user-graduate',
-        ],
-        [
-            'text' => 'Docentes',
-            'route' => 'admin.docentes.index',
-            'icon' => 'fas fa-user-tie',
-        ],
-        [
-            'text' => 'Materias',
-            'route' => 'admin.asignaturas.index',
-            'icon' => 'fas fa-book-open',
-        ],
+       [
+    'header' => 'GESTIÓN ACADÉMICA',
+],
+[
+    'text' => 'Alumnos',
+    'route' => 'admin.alumnos.index',
+    'icon' => 'fas fa-user-graduate',
+],
+[
+    'text' => 'Docentes',
+    'route' => 'admin.docentes.index',
+    'icon' => 'fas fa-user-tie',
+],
+[
+    'text' => 'Cursos y Asignaturas',
+    'icon' => 'fas fa-school',
+    'submenu' => [
         [
             'text' => 'Cursos',
             'route' => 'admin.cursos.index',
             'icon' => 'fas fa-chalkboard-teacher',
+        ],
+        [
+            'text' => 'Asignaturas',
+            'route' => 'admin.asignaturas.index',
+            'icon' => 'fas fa-book-open',
+        ],
+        [
+            'text' => 'Asignaciones (Curso ↔ Asignatura)',
+            'route' => 'admin.asignatura-cursos.index',
+            'icon' => 'fas fa-link',
         ],
         [
             'text' => 'Divisiones',
@@ -366,44 +377,47 @@ return [
         [
             'text' => 'Nivel (Ciclo)',
             'route' => 'admin.ciclos.index',
-            'icon' => 'fas fa-layer-group', // Representa niveles o agrupaciones
+            'icon' => 'fas fa-stream',
         ],
         [
             'text' => 'Turnos',
             'route' => 'admin.turnos.index',
-            'icon' => 'fas fa-clock', // Representa horarios/turnos
+            'icon' => 'fas fa-clock',
         ],
-          [
-            'text' => 'Grupos Talleres',
-            'route' => 'admin.grupos.index',
-            'icon' => 'fas fa-clock', // Representa horarios/turnos
-        ],
-        [
-            'text' => 'Planificaciones',
-            'route' => 'admin.planificaciones.index',
-            'icon' => 'fas fa-calendar-alt', // Representa planificación o calendario
-        ],
+    ],
+],
+[
+    'text' => 'Grupos Talleres',
+    'route' => 'admin.grupos.index',
+    'icon' => 'fas fa-users-cog',
+],
+[
+    'text' => 'Planificaciones',
+    'route' => 'admin.planificaciones.index',
+    'icon' => 'fas fa-calendar-alt',
+],
+[
+    'header' => 'SISTEMA',
+],
+[
+    'text' => 'Roles',
+    'route' => 'admin.roles.index',
+    'icon' => 'fas fa-user-tag',
+],
+[
+    'text' => 'Permisos',
+    'route' => 'admin.permisos.index',
+    'icon' => 'fas fa-key',
+],
+[
+    'text' => 'Usuarios',
+    'route' => 'admin.usuarios.index',
+    'icon' => 'fas fa-users',
+],
+[
+    'header' => '--- SIUT ---',
+],
 
-
-        ['header' => 'SISTEMA',],
-
-        [
-            'text' => 'Roles',
-            'route' => 'admin.roles.index', // ← Ruta que usás en web.php admin.roles.index
-            'icon'  => 'fas fa-user-tag',
-        ],
-        [
-            'text' => 'Permisos',
-            'route' => 'admin.permisos.index', // ← Ajustá a tu naming admin.permisos.index
-            'icon'  => 'fas fa-key',
-        ],
-        [
-            'text' => 'Usuarios',
-            'route' => 'admin.usuarios.index',//admin.usuarios.index
-            'icon'  => 'fas fa-users',
-        ],
-
-        ['header' => '--- SIUT ---',],
     
     ],
 

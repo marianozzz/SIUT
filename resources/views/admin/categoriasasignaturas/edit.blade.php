@@ -1,28 +1,37 @@
 @extends('adminlte::page')
 
-@section('title', 'Editar Categoría')
+@section('title', 'Editar Categoría de Asignatura')
 
 @section('content_header')
-    <h1>Editar Categoría</h1>
+    <h1>Editar Categoría de Asignatura</h1>
 @stop
 
 @section('content')
-<div class="card">
-    <div class="card-body">
-        <form action="{{ route('admin.categoriasasignaturas.update', $categorias_asignatura) }}" method="POST">
-            @csrf
-            @method('PUT')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" name="nombre" class="form-control" value="{{ old('nombre', $categorias_asignatura->nombre) }}" required>
-            </div>
+    <form action="{{ route('admin.categoriasasignaturas.update', $categoriaAsignatura) }}" method="POST">
+        @csrf
+        @method('PUT')
 
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Actualizar
-            </button>
-            <a href="{{ route('admin.categoriasasignaturas.index') }}" class="btn btn-secondary">Cancelar</a>
-        </form>
-    </div>
-</div>
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" class="form-control" value="{{ old('nombre', $categoriaAsignatura->nombre) }}" required>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="descripcion">Descripción</label>
+            <textarea name="descripcion" class="form-control" rows="4">{{ old('descripcion', $categoriaAsignatura->descripcion) }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Actualizar</button>
+        <a href="{{ route('admin.categoriasasignaturas.index') }}" class="btn btn-secondary mt-3">Cancelar</a>
+    </form>
 @stop

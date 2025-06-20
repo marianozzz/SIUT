@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Horario extends Model
 {
-    protected $fillable = ['asignatura_curso_id', 'dia', 'hora_entrada', 'hora_salida'];
+        protected $fillable = [
+        'asignatura_curso_id',
+        'dia',
+        'hora_entrada',
+        'hora_salida',
+        'turno_id',
+        'profesor_id',
+    ];
 
     public function asignaturaCurso()
     {
@@ -16,6 +23,12 @@ class Horario extends Model
     {
         return $this->belongsTo(Turno::class);
     }
+
+    public function docente()
+{
+    return $this->belongsTo(\App\Models\Docente::class, 'profesor_id');
+}
+
 
 }
 

@@ -30,4 +30,6 @@ class Docente extends Model
     {
         return $this->hasManyThrough(Asignatura::class, AsignaturaCurso::class, 'profesor_id', 'id', 'id', 'asignatura_id');
     }
+
+    
 }

@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoriaAsignaturaController;
 use App\Http\Controllers\Admin\AsignaturaHorarioController;
+use App\Http\Controllers\Admin\AsignaturaCursoController;
 use App\Http\Controllers\Admin\TurnoController;
 use App\Http\Controllers\Admin\CicloController;
 use App\Http\Controllers\Admin\GrupoTallerController;
@@ -109,7 +110,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::delete('cursos/{curso}/quitar-asignatura/{asignatura}', [CursoController::class, 'quitarAsignatura'])->name('cursos.quitarAsignatura');
  
     Route::resource('divisiones', DivisionController::class);
+
     Route::resource('asignaturas', AsignaturaController::class);
+
+    Route::resource('asignatura-cursos', AsignaturaCursoController::class);
+    Route::resource('horarios', AsignaturaHorarioController::class);
+    Route::get('horarios/{asignaturaCurso}/asignar-docente', [AsignaturaHorarioController::class, 'vistaAsignarDocentePorDia'])
+    ->name('horarios.vista-asignar-docente');
+    Route::post('horarios/asignar-docente', [AsignaturaHorarioController::class, 'asignarDocentePorDia'])
+    ->name('horarios.asignar-docente');
+
+
     Route::resource('especialidades', EspecialidadController::class)
                     ->names('especialidades')
                     ->parameters(['especialidades' => 'especialidad']);
@@ -123,7 +134,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     Route::resource('turnos', TurnoController::class);
 
-    Route::resource('horarios', AsignaturaHorarioController::class);
+    
 
 Route::get('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'asignarCurso'])->name('admin.alumnos.asignarCurso');
 Route::post('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'guardarCurso']);

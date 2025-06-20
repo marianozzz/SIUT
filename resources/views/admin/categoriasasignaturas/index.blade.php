@@ -18,6 +18,7 @@
         <thead>
             <tr>
                 <th>Nombre</th>
+                <th>Descripción</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -25,6 +26,7 @@
             @foreach($categorias as $categoria)
                 <tr>
                     <td>{{ $categoria->nombre }}</td>
+                    <td>{{ $categoria->descripcion ?? 'Sin descripción' }}</td>
                     <td>
                         <a href="{{ route('admin.categoriasasignaturas.edit', $categoria) }}" class="btn btn-warning btn-sm">Editar</a>
                         <form action="{{ route('admin.categoriasasignaturas.destroy', $categoria) }}" method="POST" style="display:inline;">

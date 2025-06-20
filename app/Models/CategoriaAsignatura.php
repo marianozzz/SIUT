@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 class CategoriaAsignatura extends Model
 {
     protected $table = 'categorias_asignaturas';
-    protected $fillable = ['nombre'];
+
+    protected $fillable = [
+        'nombre',
+        'descripcion', // Campo agregado
+    ];
 
     public function asignaturas()
     {

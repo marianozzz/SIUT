@@ -17,13 +17,18 @@ use Illuminate\Http\Request;
 
 class CursoController extends Controller
 {
-    public function index()
-    {
-       $cursos = Curso::with(['division', 'especialidad'])->get(); // si hay relación con división
+public function index()
+{
+    $cursos = Curso::with(['division', 'especialidad'])
+        ->join('divisions', 'cursos.division_id', '=', 'divisions.id')
+        ->select('cursos.*') // importante para evitar conflictos con los campos de divisions
+        ->orderBy('cursos.nivel')
+        ->orderBy('divisions.nombre')
+        ->paginate(15);
 
-      //  dd($cursos);
-        return view('admin.cursos.index', compact('cursos'));
-    }
+    return view('admin.cursos.index', compact('cursos'));
+}
+
 
    public function create()
 {

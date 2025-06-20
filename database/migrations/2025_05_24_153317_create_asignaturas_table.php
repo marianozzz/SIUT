@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('asignaturas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->text('descripcion')->nullable(); // Campo nuevo
             $table->unsignedBigInteger('categoria_asignatura_id')->nullable();
             $table->foreign('categoria_asignatura_id')
-                ->references('id')->on('categorias_asignaturas')
-                ->onDelete('set null');
+                  ->references('id')->on('categorias_asignaturas')
+                  ->onDelete('set null');
             $table->timestamps();
-            
         });
     }
 

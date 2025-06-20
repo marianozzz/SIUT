@@ -7,6 +7,7 @@ class Asignatura extends Model
 {
     protected $fillable = [
         'nombre',
+        'descripcion',             // <-- Agregado para poder asignar este campo
         'categoria_asignatura_id',
     ];
 

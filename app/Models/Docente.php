@@ -31,5 +31,11 @@ class Docente extends Model
         return $this->hasManyThrough(Asignatura::class, AsignaturaCurso::class, 'profesor_id', 'id', 'id', 'asignatura_id');
     }
 
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'usuario_id');
+    }
+
+
     
 }

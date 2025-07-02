@@ -62,4 +62,10 @@ class Curso extends Model
             'profesor_id'  // FK en asignatura_cursos hacia docentes
         );
     }
+
+    public function actividades()
+    {
+        return $this->belongsToMany(Actividad::class);
+    }
+
 }

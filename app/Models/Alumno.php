@@ -37,4 +37,14 @@ public function cursos()
     {
         return $this->apellido . ', ' . $this->nombre;
     }
+        public function asistencias()
+    {
+        return $this->hasMany(Asistencia::class);
+    }
+
+    public function calificaciones()
+    {
+        return $this->hasMany(Calificacion::class);
+    }
+
 }

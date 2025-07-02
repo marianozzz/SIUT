@@ -25,19 +25,21 @@ use App\Http\Controllers\Admin\AsignaturaCursoController;
 use App\Http\Controllers\Admin\TurnoController;
 use App\Http\Controllers\Admin\CicloController;
 use App\Http\Controllers\Admin\GrupoTallerController;
-
-
-
+use App\Http\Controllers\Admin\AlumnoImportExportController;
 
 
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+//Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
 
 // Controlador Dashboard Docente
 use App\Http\Controllers\Docente\CursoController as DocenteCursoController;
 use App\Http\Controllers\Docente\PerfilController;
+use App\Http\Controllers\Docente\AsistenciaController;
+use App\Http\Controllers\Docente\CalificacionController;
+use App\Http\Controllers\Docente\ProgramaController;
+use App\Http\Controllers\Docente\ActividadController;
 
 
 // Controlador Dashboard Alumno (crear si no existe)
@@ -48,10 +50,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Dashboard genérico si no hay rol reconocido
-/*Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');*/
 
 // ⚙️ Configuraciones de usuario
 Route::middleware(['auth'])->group(function () {
@@ -67,15 +65,23 @@ Route::prefix('docentes')->name('docentes.')->middleware(['auth', 'role:docente'
     Route::get('/dashboard', function () {return view('/docentes/dashboard');})->name('home');
     Route::resource('/cursos', DocenteCursoController::class);
 // Perfil del docente como recurso (si solo usas index, edit, update)
-    Route::resource('perfil', PerfilController::class)->only([
-        'index', 'edit', 'update'
-    ]);
-/*
-Route::get('/calendario', function () {
-    return view('docentes.calendario.index');
-});*/
-    //Route::get('docentes/asignaturas/{id}', [DocenteAsignaturaController::class, 'show'])->name('docentes.asignaturas.show');
+    Route::resource('perfil', PerfilController::class)->only(['index', 'edit', 'update']);
+    Route::get('cursos/{curso}/asistencias/create', [AsistenciaController::class, 'create'])
+        ->name('asistencias.create');
+    Route::post('cursos/{curso}/asistencias/store', [AsistenciaController::class, 'store'])
+        ->name('asistencias.store');
+         Route::get('cursos/{curso}/calificaciones/create', [CalificacionController::class, 'create'])
+        ->name('calificaciones.create');
+    Route::post('cursos/{curso}/calificaciones/store', [CalificacionController::class, 'store'])
+        ->name('calificaciones.store');
 
+       Route::resource('programas', ProgramaController::class)->except(['create', 'store']);
+    // Agregar programa a una planificación
+    Route::get('programas/create/{planificacion}', [ProgramaController::class, 'create'])->name('programas.create');
+    Route::post('programas/{planificacion}', [ProgramaController::class, 'store'])->name('programas.store');
+    Route::resource('planificaciones', \App\Http\Controllers\Docente\PlanificacionController::class);
+
+     Route::resource('actividades', ActividadController::class);
 });
 
 // 👨‍🎓 ALUMNO (crear controlador o vista según necesites)
@@ -134,8 +140,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     Route::resource('turnos', TurnoController::class);
 
-    
-
+    Route::get('admin/alumnos/export', [AlumnoImportExportController::class, 'export'])->name('alumnos.export');
+    Route::post('alumnos/import', [AlumnoImportExportController::class, 'import'])->name('alumnos.import');
 Route::get('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'asignarCurso'])->name('admin.alumnos.asignarCurso');
 Route::post('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'guardarCurso']);
 

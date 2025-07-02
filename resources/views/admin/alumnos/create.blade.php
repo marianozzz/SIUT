@@ -80,9 +80,12 @@
                     </option>
                 @endforeach
             </select>
+            <small class="form-text text-muted">Este campo es opcional. Puedes asignar el curso luego.</small>
         </div>
 
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Alumno</button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Guardar Alumno
+        </button>
         <a href="{{ route('admin.alumnos.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 @stop

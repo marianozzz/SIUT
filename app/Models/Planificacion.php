@@ -27,4 +27,10 @@ class Planificacion extends Model
     public function docente() {
         return $this->belongsTo(Docente::class);
     }
+
+        public function programas()
+    {
+        return $this->hasMany(Programa::class);
+    }
+
 }

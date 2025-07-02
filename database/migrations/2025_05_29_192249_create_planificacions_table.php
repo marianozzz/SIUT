@@ -17,7 +17,11 @@ return new class extends Migration
             $table->foreignId('curso_id')->constrained()->onDelete('cascade');
             $table->foreignId('docente_id')->constrained()->onDelete('cascade');
             $table->year('fecha');
-            $table->text('contenido')->nullable(); // puede contener descripción, temas, etc.
+            $table->text('fundamentacion')->nullable();
+            $table->text('objetivos')->nullable();
+            $table->text('propositos')->nullable();
+            $table->text('estrategias')->nullable();
+            $table->text('evaluacion')->nullable();
             $table->timestamps();
         });
     }

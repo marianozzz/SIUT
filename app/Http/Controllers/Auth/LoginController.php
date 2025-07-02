@@ -30,7 +30,7 @@ public function login(Request $request)
         if ($user->hasRole('admin')) {
             return redirect()->route('admin.dashboard');
         } elseif ($user->hasRole('docente')) {
-            return redirect()->route('docentes.dashboard');
+            return redirect()->route('docentes.home');
         } elseif ($user->hasRole('alumno')) {
             return redirect()->route('alumnos.dashboard');
         }

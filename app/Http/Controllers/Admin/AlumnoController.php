@@ -23,25 +23,30 @@ class AlumnoController extends Controller
         return view('admin.alumnos.create', compact('cursos'));
     }
 
-    // AlumnoController.php
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'dni' => 'required|string|max:15|unique:alumnos,dni',
-            'fecha_nacimiento' => 'nullable|date',
-            'sexo' => 'nullable|string|max:10',
-            'nacionalidad' => 'nullable|string|max:100',
-            'email' => 'nullable|email|max:255|unique:alumnos,email',
-            'telefono' => 'nullable|string|max:20',
-            'domicilio' => 'nullable|string|max:255',
-        ]);
+  public function store(Request $request)
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'apellido' => 'required|string|max:255',
+        'dni' => 'required|string|max:15|unique:alumnos,dni',
+        'fecha_nacimiento' => 'nullable|date',
+        'sexo' => 'nullable|string|max:10',
+        'nacionalidad' => 'nullable|string|max:100',
+        'email' => 'nullable|email|max:255|unique:alumnos,email',
+        'telefono' => 'nullable|string|max:20',
+        'domicilio' => 'nullable|string|max:255',
+        'curso_id' => 'nullable|exists:cursos,id', // validación opcional
+    ]);
 
-        $alumno = Alumno::create($request->all());
+    $alumno = Alumno::create($request->except('curso_id'));
 
-        return redirect()->route('admin.alumnos.create', $alumno);
+    if ($request->filled('curso_id')) {
+        $alumno->cursos()->attach($request->curso_id);
     }
+
+    return redirect()->route('admin.alumnos.index')->with('success', 'Alumno registrado correctamente.');
+}
+
 
     public function show(Alumno $alumno)
     {

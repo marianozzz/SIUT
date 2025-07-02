@@ -2,20 +2,28 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
-class AppServiceProvider extends ServiceProvider
+// Importamos los modelos y sus policies
+use App\Models\Planificacion;
+use App\Policies\PlanificacionPolicy;
+use App\Models\Programa;
+use App\Policies\ProgramaPolicy;
+
+class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * The policy mappings for the application.
      */
-    public function register(): void
-    {
-        //
-    }
+    protected $policies = [
+        Planificacion::class => PlanificacionPolicy::class,
+        Programa::class => ProgramaPolicy::class,
+        Actividad::class => ActividadPolicy::class,
+    ];
 
     /**
-     * Bootstrap any application services.
+     * Register any authentication / authorization services.
      */
     public function boot(): void
     {

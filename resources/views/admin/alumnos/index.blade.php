@@ -13,10 +13,29 @@
         </div>
     @endif
 
-    <a href="{{ route('admin.alumnos.create') }}" class="btn btn-primary mb-3">
-        <i class="fas fa-user-plus"></i> Nuevo Alumno
-    </a>
+    {{-- Botones de acción --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{{ route('admin.alumnos.create') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Nuevo Alumno
+        </a>
 
+        <a href="{{ route('admin.alumnos.export') }}" class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Exportar Alumnos (CSV)
+        </a>
+    </div>
+
+    {{-- Formulario de importación --}}
+    <form action="{{ route('admin.alumnos.import') }}" method="POST" enctype="multipart/form-data" class="mb-4">
+        @csrf
+        <div class="input-group" style="max-width: 500px;">
+            <input type="file" name="file" class="form-control" accept=".csv" required>
+            <button type="submit" class="btn btn-outline-secondary">
+                <i class="fas fa-upload"></i> Importar CSV
+            </button>
+        </div>
+    </form>
+
+    {{-- Tabla de alumnos --}}
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
@@ -62,3 +81,4 @@
         </tbody>
     </table>
 @stop
+

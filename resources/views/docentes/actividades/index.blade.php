@@ -25,9 +25,14 @@
                             <h5 class="card-title text-info">
                                 <i class="bi bi-file-earmark-text"></i> {{ $actividad->titulo }}
                             </h5>
-                            <p class="text-muted">
-                                {{ \Illuminate\Support\Str::limit(strip_tags($actividad->contenido), 100) }}
-                            </p>
+
+                            @if($actividad->descripcion)
+                                <p class="text-muted mb-0">
+                                    {{ Str::limit($actividad->descripcion, 120) }}
+                                </p>
+                            @else
+                                <p class="text-muted fst-italic">Sin descripción</p>
+                            @endif
                         </div>
                         <div class="card-footer bg-white text-end">
                             <a href="{{ route('docentes.actividades.show', $actividad) }}" class="btn btn-sm btn-outline-info">
@@ -44,4 +49,5 @@
     @endif
 </div>
 @endsection
+
 

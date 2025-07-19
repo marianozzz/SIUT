@@ -12,36 +12,36 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class AlumnoImportExportController extends Controller
 {
     public function export()
-    {
-        $alumnos = Alumno::with('cursos.division')->get();
+{
+    $alumnos = Alumno::all();
 
-        $response = new StreamedResponse(function () use ($alumnos) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Nombre', 'Apellido', 'DNI', 'Email', 'Teléfono', 'Curso', 'División']);
+    $response = new StreamedResponse(function () use ($alumnos) {
+        $handle = fopen('php://output', 'w');
 
-            foreach ($alumnos as $alumno) {
-                $curso = $alumno->cursos->last(); // último curso asignado (puede ser null)
-                fputcsv($handle, [
-                    $alumno->nombre,
-                    $alumno->apellido,
-                    $alumno->dni,
-                    $alumno->email,
-                    $alumno->telefono,
-                    $curso?->nivel ?? '',
-                    $curso?->division->nombre ?? '',
-                ]);
-            }
+        // Convertir UTF-8 a Windows-1252 para compatibilidad con Excel
+        stream_filter_append($handle, 'convert.iconv.UTF-8/Windows-1252//TRANSLIT');
 
-            fclose($handle);
-        });
+        // Encabezados
+        fputcsv($handle, ['Nombre', 'Apellido', 'DNI']);
 
-        // Forzar descarga
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="alumnos.csv"');
+        // Datos de alumnos
+        foreach ($alumnos as $alumno) {
+            fputcsv($handle, [
+                $alumno->nombre,
+                $alumno->apellido,
+                $alumno->dni,
+            ]);
+        }
 
-        return $response;
-    }
+        fclose($handle);
+    });
 
+    // Forzar descarga como CSV con codificación Windows-1252
+    $response->headers->set('Content-Type', 'text/csv; charset=Windows-1252');
+    $response->headers->set('Content-Disposition', 'attachment; filename="alumnos.csv"');
+
+    return $response;
+}
 public function import(Request $request)
 {
     $request->validate([

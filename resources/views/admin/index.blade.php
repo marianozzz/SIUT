@@ -10,16 +10,16 @@
 <div class="row">
     <!-- Tarjetas -->
     <div class="col-lg-3 col-6">
-        <x-adminlte-small-box title="1250" text="Estudiantes" icon="fas fa-user-graduate" theme="info"/>
+        <x-adminlte-small-box title="{{ $totalEstudiantes }}" text="Estudiantes" icon="fas fa-user-graduate" theme="info"/>
     </div>
     <div class="col-lg-3 col-6">
-        <x-adminlte-small-box title="85" text="Profesores" icon="fas fa-chalkboard-teacher" theme="success"/>
+        <x-adminlte-small-box title="{{ $totalProfesores }}" text="Profesores" icon="fas fa-chalkboard-teacher" theme="success"/>
     </div>
     <div class="col-lg-3 col-6">
-        <x-adminlte-small-box title="120" text="Cursos" icon="fas fa-book-open" theme="warning"/>
+        <x-adminlte-small-box title="{{ $totalCursos }}" text="Cursos" icon="fas fa-book-open" theme="warning"/>
     </div>
     <div class="col-lg-3 col-6">
-        <x-adminlte-small-box title="14" text="Solicitudes Pendientes" icon="fas fa-envelope" theme="danger"/>
+        <x-adminlte-small-box title="0" text="Solicitudes Pendientes" icon="fas fa-envelope" theme="danger"/>
     </div>
 </div>
 
@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<!-- Tabla de solicitudes -->
+<!-- Tabla de solicitudes (sin datos reales por ahora) -->
 <x-adminlte-card title="Solicitudes Recientes" theme="lightblue" icon="fas fa-tasks" collapsible>
     <div class="table-responsive">
         <table class="table table-bordered">
@@ -54,23 +54,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Ana López</td>
-                    <td>5to A</td>
-                    <td>Cambio curso</td>
-                    <td><span class="badge badge-warning">Pendiente</span></td>
-                    <td>
-                        <button class="btn btn-success btn-sm">Aceptar</button>
-                        <button class="btn btn-danger btn-sm">Rechazar</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Carlos Ruiz</td>
-                    <td>6to B</td>
-                    <td>Baja temporal</td>
-                    <td><span class="badge badge-info">En revisión</span></td>
-                    <td>
-                        <button class="btn btn-success btn-sm">Aceptar</button>
-                        <button class="btn btn-danger btn-sm">Rechazar</button>
+                    <td colspan="5" class="text-center text-muted">
+                        Sin datos por el momento.
                     </td>
                 </tr>
             </tbody>
@@ -85,34 +70,59 @@
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @php
+        $meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        $labelsMatriculas = [];
+        $datosMatriculas = [];
+
+        foreach (range(1, 12) as $mes) {
+            $labelsMatriculas[] = $meses[$mes - 1];
+            $datosMatriculas[] = $matriculasPorMes[$mes] ?? 0;
+        }
+
+        $grados = $distribucionPorGrado->keys()->map(fn($nivel) => $nivel . 'º');
+        $totales = $distribucionPorGrado->values();
+    @endphp
+
     <script>
-        // Gráfico de líneas: Matrículas
+        // Gráfico de Matrículas
         new Chart(document.getElementById('matriculasChart'), {
             type: 'line',
             data: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                labels: @json($labelsMatriculas),
                 datasets: [{
                     label: 'Matrículas',
-                    data: [50, 75, 120, 200, 180, 250],
+                    data: @json($datosMatriculas),
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     fill: true
                 }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
             }
         });
 
-        // Gráfico circular: Distribución
+        // Gráfico de Distribución por Grado
         new Chart(document.getElementById('distribucionChart'), {
             type: 'doughnut',
             data: {
-                labels: ['1ro', '2do', '3ro', '4to', '5to', '6to'],
+                labels: @json($grados),
                 datasets: [{
-                    data: [120, 150, 200, 180, 160, 140],
+                    data: @json($totales),
                     backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#17a2b8']
                 }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
             }
         });
-
-        console.log('Panel de administración cargado');
     </script>
 @stop

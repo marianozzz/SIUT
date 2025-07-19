@@ -45,4 +45,11 @@ class AsignaturaCurso extends Model
     {
         return $this->belongsTo(Turno::class);
     }
+
+    // Grupo taller asociado a esta asignación (si aplica)
+    public function grupoTaller()
+    {
+        return $this->hasOne(GrupoTaller::class);
+    }
 }
+

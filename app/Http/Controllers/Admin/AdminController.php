@@ -2,17 +2,44 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Alumno;
 
+use App\Models\Docente;
+use App\Models\Curso;
+
 class AdminController extends Controller
 {
-     public function index()
-    {
-       
-        return view('admin.index');
-    }
+    public function index()
+{
+    $totalEstudiantes = Alumno::count();
+    $totalProfesores = Docente::count();
+    $totalCursos = Curso::count();
+
+    // Matrículas por mes
+    $matriculasPorMes = Alumno::selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+        ->groupBy('mes')
+        ->orderBy('mes')
+        ->pluck('total', 'mes');
+
+    // Distribución por grado (nivel)
+    $distribucionPorGrado = DB::table('alumno_curso')
+        ->join('cursos', 'alumno_curso.curso_id', '=', 'cursos.id')
+        ->select('cursos.nivel', DB::raw('count(*) as total'))
+        ->groupBy('cursos.nivel')
+        ->orderBy('cursos.nivel')
+        ->pluck('total', 'nivel');
+
+    return view('admin.index', compact(
+        'totalEstudiantes',
+        'totalProfesores',
+        'totalCursos',
+        'matriculasPorMes',
+        'distribucionPorGrado'
+    ));
+}
 
     public function create()
     {

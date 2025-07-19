@@ -15,6 +15,13 @@
             <input type="text" name="titulo" id="titulo" class="form-control" required value="{{ old('titulo') }}">
         </div>
 
+        {{-- Descripción (opcional) --}}
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción (opcional)</label>
+            <input type="text" name="descripcion" id="descripcion" class="form-control" value="{{ old('descripcion') }}">
+            <div class="form-text">Breve resumen del contenido o propósito de la actividad.</div>
+        </div>
+
         {{-- Contenido con Trix --}}
         <div class="mb-3">
             <label for="contenido" class="form-label">Contenido</label>
@@ -51,3 +58,4 @@
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/2.0.0/trix.umd.min.js"></script>
 @endpush
+

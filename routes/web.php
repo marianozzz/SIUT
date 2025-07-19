@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\TurnoController;
 use App\Http\Controllers\Admin\CicloController;
 use App\Http\Controllers\Admin\GrupoTallerController;
 use App\Http\Controllers\Admin\AlumnoImportExportController;
+use App\Http\Controllers\Admin\SolicitudController;
 
 
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
@@ -66,14 +67,23 @@ Route::prefix('docentes')->name('docentes.')->middleware(['auth', 'role:docente'
     Route::resource('/cursos', DocenteCursoController::class);
 // Perfil del docente como recurso (si solo usas index, edit, update)
     Route::resource('perfil', PerfilController::class)->only(['index', 'edit', 'update']);
+   
     Route::get('cursos/{curso}/asistencias/create', [AsistenciaController::class, 'create'])
         ->name('asistencias.create');
     Route::post('cursos/{curso}/asistencias/store', [AsistenciaController::class, 'store'])
         ->name('asistencias.store');
+    Route::get('cursos/{curso}/asistencias', [AsistenciaController::class, 'show'])
+    ->name('asistencias.show');
+
+    Route::get('cursos/{curso}/asistencias', [AsistenciaController::class, 'index'])
+      ->name('asistencias.index');
+
          Route::get('cursos/{curso}/calificaciones/create', [CalificacionController::class, 'create'])
         ->name('calificaciones.create');
     Route::post('cursos/{curso}/calificaciones/store', [CalificacionController::class, 'store'])
         ->name('calificaciones.store');
+
+
 
        Route::resource('programas', ProgramaController::class)->except(['create', 'store']);
     // Agregar programa a una planificación
@@ -142,11 +152,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     Route::get('admin/alumnos/export', [AlumnoImportExportController::class, 'export'])->name('alumnos.export');
     Route::post('alumnos/import', [AlumnoImportExportController::class, 'import'])->name('alumnos.import');
-Route::get('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'asignarCurso'])->name('admin.alumnos.asignarCurso');
-Route::post('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'guardarCurso']);
+    Route::get('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'asignarCurso'])->name('admin.alumnos.asignarCurso');
+    Route::post('alumnos/{alumno}/asignar-curso', [AlumnoController::class, 'guardarCurso']);
 
-Route::resource('grupos', GrupoTallerController::class);
-
+    Route::resource('grupos', GrupoTallerController::class);
+    Route::resource('solicitudes', SolicitudController::class);
 
 // AJAX: obtener asignaturas de un curso
 Route::get('cursos/{curso}/asignaturas', [GrupoTallerController::class, 'asignaturasDelCurso']);

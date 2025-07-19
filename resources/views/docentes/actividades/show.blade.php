@@ -11,8 +11,17 @@
             <h5 class="mb-0">{{ $actividad->titulo }}</h5>
         </div>
         <div class="card-body">
+
+            {{-- Descripción opcional --}}
+            @if($actividad->descripcion)
+                <p class="text-muted fst-italic">{{ $actividad->descripcion }}</p>
+                <hr>
+            @endif
+
+            {{-- Contenido --}}
             <div>{!! $actividad->contenido !!}</div>
 
+            {{-- Cursos asignados --}}
             @if($actividad->cursos->isNotEmpty())
                 <hr>
                 <h6>Cursos asignados:</h6>

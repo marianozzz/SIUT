@@ -24,20 +24,23 @@
                 <h5><i class="bi bi-book-half me-2"></i> Asignaturas que dictás</h5>
 
                 @php
-                    $asignadas = $curso->asignaturas->where('pivot.profesor_id', auth()->user()->docente->id);
+                    $asignadas = $curso->asignaturaCursos;
                 @endphp
 
                 @if($asignadas->isEmpty())
                     <p class="text-muted">No hay asignaturas asignadas en este curso.</p>
                 @else
                     <ul class="list-group">
-                        @foreach($asignadas as $asignatura)
+                        @foreach($asignadas as $asignaturaCurso)
                             <li class="list-group-item">
                                 <h6 class="mb-1">
-                                    <i class="bi bi-dot"></i> {{ $asignatura->nombre }}
+                                    <i class="bi bi-dot"></i> {{ $asignaturaCurso->asignatura->nombre ?? 'Sin asignatura' }}
                                 </h6>
                                 <small class="text-muted d-block">
-                                    <strong>Tema:</strong> {{ $asignatura->pivot->tema ?? 'Sin tema' }}
+                                    <strong>Tema:</strong> {{ $asignaturaCurso->tema ?? 'Sin tema' }}
+                                </small>
+                                <small class="text-muted d-block">
+                                    <strong>Grupo:</strong> {{ $asignaturaCurso->grupoTaller->nombre ?? 'Sin grupo' }}
                                 </small>
                             </li>
                         @endforeach
@@ -62,21 +65,33 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php
+                                    // Fechas únicas de asistencia registradas en este curso
+                                    $fechasCurso = $curso->alumnos
+                                        ->flatMap(fn($a) => $a->asistencias->where('curso_id', $curso->id)->pluck('fecha'))
+                                        ->unique();
+
+                                    $totalFechas = $fechasCurso->count();
+                                @endphp
+
                                 @foreach($curso->alumnos as $alumno)
                                     <tr>
                                         <td>{{ $alumno->apellido }}, {{ $alumno->nombre }}</td>
                                         <td>
                                             @php
-                                                // Ejemplo de cálculo de asistencia (ajusta según tus relaciones)
-                                                $totalAsistencias = $alumno->asistencias->where('curso_id', $curso->id)->count();
-                                                $presentes = $alumno->asistencias->where('curso_id', $curso->id)->where('presente', true)->count();
-                                                $porcentaje = $totalAsistencias > 0 ? round(($presentes / $totalAsistencias) * 100) : 0;
+                                                $presentes = $alumno->asistencias
+                                                    ->where('curso_id', $curso->id)
+                                                    ->where('presente', true)
+                                                    ->pluck('fecha')
+                                                    ->unique()
+                                                    ->count();
+
+                                                $porcentaje = $totalFechas > 0 ? round(($presentes / $totalFechas) * 100) : 0;
                                             @endphp
                                             {{ $porcentaje }}% presente
                                         </td>
                                         <td>
                                             @php
-                                                // Ejemplo de cálculo de promedio de calificaciones (ajusta según tus relaciones)
                                                 $notas = $alumno->calificaciones->where('curso_id', $curso->id);
                                                 $promedio = $notas->count() > 0 ? round($notas->avg('nota'), 2) : '-';
                                             @endphp
@@ -99,6 +114,11 @@
                            class="btn btn-success">
                             <i class="bi bi-pencil-square"></i> Cargar Calificaciones de la Clase
                         </a>
+
+                        <a href="{{ route('docentes.asistencias.index', $curso->id) }}"
+                           class="btn btn-outline-dark">
+                            <i class="bi bi-list-check"></i> Detalle de Asistencias
+                        </a>
                     </div>
                 @endif
             </div>
@@ -113,5 +133,6 @@
     </div>
 </div>
 @endsection
+
 
 

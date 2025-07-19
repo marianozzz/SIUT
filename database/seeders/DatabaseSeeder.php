@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CategoriaAsignaturaSeeder::class,
             TurnoSeeder::class,
             CicloSeeder::class,
+            TipoSolicitudSeeder::class,
         ]);
 
         // Crear el usuario admin y asignar rol

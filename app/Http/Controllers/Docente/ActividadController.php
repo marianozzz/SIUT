@@ -35,29 +35,32 @@ class ActividadController extends Controller
         return view('docentes.actividades.create', compact('cursos'));
     }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'titulo' => 'required|string|max:255',
-        'contenido' => 'required|string',
-        'cursos' => 'nullable|array',
-        'cursos.*' => 'exists:cursos,id',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string|max:255',
+            'contenido' => 'required|string',
+            'cursos' => 'nullable|array',
+            'cursos.*' => 'exists:cursos,id',
+        ]);
 
-    $actividad = Actividad::create([
-        'user_id' => auth()->id(),
-        'titulo' => $request->titulo,
-        'contenido' => $request->contenido,
-        'asignada' => !empty($request->cursos),
-    ]);
+        $actividad = Actividad::create([
+            'user_id' => auth()->id(),
+            'titulo' => $request->titulo,
+            'descripcion' => $request->descripcion, // nuevo campo
+            'contenido' => $request->contenido,
+            'asignada' => !empty($request->cursos),
+        ]);
 
-    if (!empty($request->cursos)) {
-        $actividad->cursos()->sync($request->cursos);
+        if (!empty($request->cursos)) {
+            $actividad->cursos()->sync($request->cursos);
+        }
+
+        return redirect()->route('docentes.actividades.index')
+            ->with('success', 'Actividad creada correctamente.');
     }
 
-    return redirect()->route('docentes.actividades.index')
-        ->with('success', 'Actividad creada correctamente.');
-}
 
  public function show($id)
     {
@@ -66,15 +69,6 @@ public function store(Request $request)
 
         // Buscar actividad por id
         $actividad = Actividad::with('cursos')->findOrFail($id);
-
-        // Debugging (opcional)
-        /*
-        logger([
-            'user_id' => $user->id,
-            'docente_id' => $user->docente?->id,
-            'actividad_user_id' => $actividad->user_id,
-        ]);
-        */
 
         // Autorizar acceso: la policy debe validar que el usuario sea dueño (user_id)
         $this->authorize('view', $actividad);
@@ -104,40 +98,36 @@ public function store(Request $request)
         return view('docentes.actividades.edit', compact('actividad', 'cursos'));
     }
 
-public function update(Request $request, $id)
-{
-    // Buscar la actividad (sin usar binding directo para evitar 403 por policy)
-    $actividad = Actividad::findOrFail($id);
+    public function update(Request $request, $id)
+    {
+        $actividad = Actividad::findOrFail($id);
 
-    // Autorización: solo el dueño puede actualizar
-    $this->authorize('update', $actividad);
+        $this->authorize('update', $actividad);
 
-    // Validación
-    $request->validate([
-        'titulo' => 'required|string|max:255',
-        'contenido' => 'required|string',
-        'cursos' => 'nullable|array',
-        'cursos.*' => 'exists:cursos,id',
-    ]);
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string|max:255',
+            'contenido' => 'required|string',
+            'cursos' => 'nullable|array',
+            'cursos.*' => 'exists:cursos,id',
+        ]);
 
-    // Actualizar actividad
-    $actividad->update([
-        'titulo' => $request->titulo,
-        'contenido' => $request->contenido,
-        'asignada' => !empty($request->cursos),
-    ]);
+        $actividad->update([
+            'titulo' => $request->titulo,
+            'descripcion' => $request->descripcion, // nuevo campo
+            'contenido' => $request->contenido,
+            'asignada' => !empty($request->cursos),
+        ]);
 
-    // Sincronizar cursos
-    if (!empty($request->cursos)) {
-        $actividad->cursos()->sync($request->cursos);
-    } else {
-        $actividad->cursos()->detach();
+        if (!empty($request->cursos)) {
+            $actividad->cursos()->sync($request->cursos);
+        } else {
+            $actividad->cursos()->detach();
+        }
+
+        return redirect()->route('docentes.actividades.index')
+            ->with('success', 'Actividad actualizada correctamente.');
     }
-
-    // Redireccionar con mensaje flash
-    return redirect()->route('docentes.actividades.index')
-        ->with('success', 'Actividad actualizada correctamente.');
-}
 
 
 

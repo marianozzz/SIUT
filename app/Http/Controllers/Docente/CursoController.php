@@ -12,32 +12,33 @@ class CursoController extends Controller
     {
         $usuario = Auth::user();
         $docente = $usuario->docente;
-
         $asignaturasCursos = $docente->asignaturaCursos()
-            ->with(['asignatura', 'curso.division'])
+            ->with(['asignatura', 'curso.division', 'grupoTaller'])
             ->get();
 
         return view('docentes.cursos.index', compact('asignaturasCursos'));
     }
 
-    public function show($id)
-    {
-        $usuario = Auth::user();
-        $docente = $usuario->docente;
+public function show($id)
+{
+    $usuario = Auth::user();
+    $docente = $usuario->docente;
 
-        // Trae asignaturas del docente, división y alumnos del curso
-        $curso = Curso::with([
-            'asignaturas' => function ($query) use ($docente) {
-                $query->where('profesor_id', $docente->id);
-            },
-            'division',
-            'alumnos' // 👉 Agregado: lista de alumnos
-        ])
-        ->whereHas('asignaturas', function ($query) use ($docente) {
-            $query->where('profesor_id', $docente->id);
-        })
-        ->findOrFail($id);
+    $curso = Curso::with([
+        'division',
+        'alumnos.asistencias',    // para cálculo asistencia
+        'alumnos.calificaciones', // para cálculo promedio
+        'asignaturaCursos' => function ($query) use ($docente) {
+            $query->where('profesor_id', $docente->id)
+                  ->with(['grupoTaller', 'asignatura']);
+        }
+    ])
+    ->whereHas('asignaturaCursos', function ($query) use ($docente) {
+        $query->where('profesor_id', $docente->id);
+    })
+    ->findOrFail($id);
 
-        return view('docentes.cursos.show', compact('curso'));
-    }
+    return view('docentes.cursos.show', compact('curso'));
+}
+
 }

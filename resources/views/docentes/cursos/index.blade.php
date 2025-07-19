@@ -23,19 +23,31 @@
                                 <div class="col-8">
                                     <div class="card-body">
                                         <h5 class="card-title fw-bold text-dark mb-2">{{ $item->asignatura->nombre ?? 'Sin asignatura' }}</h5>
+                                        
                                         <p class="card-text mb-1">
                                             <span class="badge bg-info text-dark">
                                                 <i class="bi bi-easel2-fill me-1"></i>
                                                 Curso: {{ $item->curso->nivel ?? 'Sin curso' }}
                                             </span>
                                         </p>
-                                        <p class="card-text mb-3">
+
+                                        <p class="card-text mb-1">
                                             <span class="badge bg-secondary">
                                                 <i class="bi bi-people-fill me-1"></i>
                                                 División: {{ $item->curso->division->nombre ?? 'Sin división' }}
                                             </span>
                                         </p>
-                                        <div class="text-end">
+
+                                        @if($item->grupoTaller)
+                                            <p class="card-text mb-1">
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="bi bi-diagram-3-fill me-1"></i>
+                                                    Grupo: {{ $item->grupoTaller->nombre }}
+                                                </span>
+                                            </p>
+                                        @endif
+
+                                        <div class="text-end mt-2">
                                             <a href="{{ route('docentes.cursos.show', $item->curso->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
                                                 <i class="bi bi-eye-fill me-1"></i> Ver
                                             </a>
@@ -51,3 +63,4 @@
     </div>
 </div>
 @endsection
+

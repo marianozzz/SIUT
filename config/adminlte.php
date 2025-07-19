@@ -397,6 +397,11 @@ return [
     'icon' => 'fas fa-calendar-alt',
 ],
 [
+    'text' => 'Solicitudes',
+    'route' => 'admin.solicitudes.index',
+    'icon' => 'fas fa-envelope',
+],
+[
     'header' => 'SISTEMA',
 ],
 [

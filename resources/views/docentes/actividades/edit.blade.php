@@ -26,6 +26,21 @@
             @enderror
         </div>
 
+        {{-- Descripción --}}
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción (opcional)</label>
+            <input
+                type="text"
+                name="descripcion"
+                id="descripcion"
+                class="form-control @error('descripcion') is-invalid @enderror"
+                value="{{ old('descripcion', $actividad->descripcion) }}"
+            >
+            @error('descripcion')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
         {{-- Contenido con Trix --}}
         <div class="mb-3">
             <label for="contenido" class="form-label">Contenido</label>

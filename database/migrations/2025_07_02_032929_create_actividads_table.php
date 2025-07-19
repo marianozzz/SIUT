@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // docente que creó la actividad
             $table->string('titulo');
+            $table->string('descripcion')->nullable(); // <--- Campo opcional agregado aquí
             $table->text('contenido'); // editor tipo Trix
             $table->boolean('asignada')->default(false); // si está vinculada a algún curso
             $table->timestamps();

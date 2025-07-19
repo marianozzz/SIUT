@@ -12,6 +12,7 @@ class Actividad extends Model
     protected $fillable = [
         'user_id',
         'titulo',
+        'descripcion',
         'contenido',
         'asignada',
     ];
